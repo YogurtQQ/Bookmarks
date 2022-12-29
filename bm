@@ -46,18 +46,17 @@ if count $argv > /dev/null
                         rm $BOOKMARKS_PATH
                         touch $BOOKMARKS_PATH
                         for i in $saved_text
-                            echo $i >> $BOOKMARKS_PATH
+                            printf "%s\n" $i >> $BOOKMARKS_PATH
                         end
                         echo "Bookmark $argv[2] deleted successfully"
                     end
                 end
             case "-*"
-                echo $argv >> $BOOKMARKS_PATH
-                set line (wc -l < $BOOKMARKS_PATH)
-                echo "added \"$argv\" to line $line"
+                echo "You can't add -."
         end
     else
-        echo $argv >> $BOOKMARKS_PATH
+        set to_add $argv
+        echo -e "$to_add" >> $BOOKMARKS_PATH
         set line (wc -l < $BOOKMARKS_PATH)
         echo "added \"$argv\" to line $line"
     end
@@ -76,7 +75,7 @@ else
     switch $u
         case 1
             read new
-            echo $new >> $BOOKMARKS_PATH
+            printf "%s\n" $new >> $BOOKMARKS_PATH
         case 2 
             set x (string split \n (cat $BOOKMARKS_PATH))
             for i in (seq 1 (count $x))
@@ -98,7 +97,7 @@ else
                 rm $BOOKMARKS_PATH
                 touch $BOOKMARKS_PATH
                 for i in $saved_text
-                    echo $i >> $BOOKMARKS_PATH
+                    printf "%s\n" $i >> $BOOKMARKS_PATH
                 end
                 printf "Bookmark deleted successfully\n"
             end
@@ -120,12 +119,12 @@ else
                 rm $BOOKMARKS_PATH
                 touch $BOOKMARKS_PATH
                 for i in $saved_text
-                    echo $i >> $BOOKMARKS_PATH
+                    printf "%s\n" $i >> $BOOKMARKS_PATH
                 end
                 printf "Bookmark modified successfully\n"
             end
         case 5
             break
-    end
+        end
     end
 end
