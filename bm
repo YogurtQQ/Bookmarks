@@ -32,6 +32,10 @@ if count $argv > /dev/null
                 echo (wc -l < $BOOKMARKS_PATH). (tail -1 $BOOKMARKS_PATH)
             case -d or --delete
                 sed -i '$ d' $BOOKMARKS_PATH
+            case "-*"
+                echo $argv >> $BOOKMARKS_PATH
+                set line (wc -l < $BOOKMARKS_PATH)
+                echo "added \"$argv\" to line $line"
         end
     else
         echo $argv >> $BOOKMARKS_PATH
