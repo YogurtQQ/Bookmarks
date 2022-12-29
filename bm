@@ -31,7 +31,26 @@ if count $argv > /dev/null
                 echo "The last bookmark is: "
                 echo (wc -l < $BOOKMARKS_PATH). (tail -1 $BOOKMARKS_PATH)
             case -d or --delete
-                sed -i '$ d' $BOOKMARKS_PATH
+                if not set -q argv[2]
+                    sed -i '$ d' $BOOKMARKS_PATH
+                    echo "Last bookmark deleted successfully"
+                else
+                    set lines (wc -l < $BOOKMARKS_PATH)
+
+                    if [ $argv[2] -gt $lines ]
+                        echo "That bookmark doesn't exit."
+                    else
+                        set saved_text (string split \n (cat $BOOKMARKS_PATH))
+                        set -e saved_text[$argv[2]]
+        
+                        rm $BOOKMARKS_PATH
+                        touch $BOOKMARKS_PATH
+                        for i in $saved_text
+                            echo $i >> $BOOKMARKS_PATH
+                        end
+                        echo "Bookmark $argv[2] deleted successfully"
+                    end
+                end
             case "-*"
                 echo $argv >> $BOOKMARKS_PATH
                 set line (wc -l < $BOOKMARKS_PATH)
