@@ -1,0 +1,98 @@
+#!/bin/fish
+
+if count $argv > /dev/null
+    if string match -q -- '-*' $argv[1]
+        switch $argv[1]
+            case -h or --help
+                echo 
+                echo "  -h --help Help"
+                echo "  -l --list To list all the bookmarks"
+                echo "  -r --recent Show the last bookmark"
+                echo "  -d --delete Delete the last bookmark"
+                echo "  (no args): to enter the CLI"
+                echo "  (just text): for saving a bookmark"
+                echo
+            case -l or --list
+                set x (string split \n (cat $HOME/bookmarks.txt))
+                for i in (seq 1 (count $x))
+                    echo $i. $x[$i]
+                end
+            case -r or --recent
+                echo "The last bookmark is: "
+                echo (wc -l < /home/g/bookmarks.txt). (tail -1 /home/g/bookmarks.txt)
+            case -d or --delete
+                sed -i '$ d' $HOME/bookmarks.txt
+        end
+    else
+        echo $argv >> $HOME/bookmarks.txt
+        set line (wc -l < /home/g/bookmarks.txt)
+        echo "added \"$argv[1]\" to line $line"
+    end
+    
+else
+    set u
+    while true
+
+    echo 1. New
+    echo 2. List
+    echo 3. Delete
+    echo 4. Modify
+    echo 5. Exit to the cold pseudouniverse of freedom
+
+    read u
+    switch $u
+        case 1
+            read new
+            echo $new >> $HOME/bookmarks.txt
+        case 2 
+            set x (string split \n (cat $HOME/bookmarks.txt))
+            for i in (seq 1 (count $x))
+                echo $i. $x[$i]
+            end
+            echo
+        case 3
+            echo "Which?"
+            read which
+
+            set lines (wc -l < /home/g/bookmarks.txt)
+
+            if [ $which -gt $lines ]
+                echo "That bookmark doesn't exit."
+            else
+                set saved_text (string split \n (cat $HOME/bookmarks.txt))
+                set -e saved_text[$which]
+
+                rm $HOME/bookmarks.txt
+                touch $HOME/bookmarks.txt
+                for i in $saved_text
+                    echo $i >> $HOME/bookmarks.txt
+                end
+                printf "Bookmark deleted successfully\n"
+            end
+        case 4
+            echo "Which?"
+            read which
+
+            set lines (wc -l < /home/g/bookmarks.txt)
+
+            if [ $which -gt $lines ]
+                echo "That bookmark doesn't exit."
+            else
+                set saved_text (string split \n (cat $HOME/bookmarks.txt))
+                echo "Insert new content."
+                echo {$saved_text[$which]}
+                read what
+                set saved_text[$which] $what
+
+                rm $HOME/bookmarks.txt
+                touch $HOME/bookmarks.txt
+                for i in $saved_text
+                    echo $i >> $HOME/bookmarks.txt
+                end
+                printf "Bookmark modified successfully\n"
+            end
+        case 5
+            break
+    end
+    end
+end
