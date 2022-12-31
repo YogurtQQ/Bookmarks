@@ -15,25 +15,27 @@ if count $argv > /dev/null
         switch $argv[1]
             case -h or --help
                 echo 
-                echo "  -h --help Help"
-                echo "  -l --list To list all the bookmarks"
-                echo "  -r --recent Show the last bookmark"
-                echo "  -d --delete Delete the last bookmark"
-                echo "  (no args): to enter the CLI"
-                echo "  (just text): for saving a bookmark"
+                echo "  -h --help Help."
+                echo "  -l --list To list all the bookmarks."
+                echo "  -r --recent Show the last bookmark."
+                echo "  -d --delete Delete the last bookmark."
+                echo "  (no args): to enter the CLI."
+                echo "  (just text): for saving a bookmark."
                 echo
             case -l or --list
                 set x (string split \n (cat $BOOKMARKS_PATH))
+                echo ""
                 for i in (seq 1 (count $x))
-                    echo $i. $x[$i]
+                    echo \u001b[33m$i.\u001b[0m $x[$i]
                 end
+                echo ""
             case -r or --recent
                 echo "The last bookmark is: "
                 echo (wc -l < $BOOKMARKS_PATH). (tail -1 $BOOKMARKS_PATH)
             case -d or --delete
                 if not set -q argv[2]
                     sed -i '$ d' $BOOKMARKS_PATH
-                    echo "Last bookmark deleted successfully"
+                    echo "Last bookmark deleted successfully."
                 else
                     set lines (wc -l < $BOOKMARKS_PATH)
 
@@ -48,7 +50,7 @@ if count $argv > /dev/null
                         for i in $saved_text
                             printf "%s\n" $i >> $BOOKMARKS_PATH
                         end
-                        echo "Bookmark $argv[2] deleted successfully"
+                        echo "Bookmark $argv[2] deleted successfully."
                     end
                 end
             case "-*"
@@ -99,7 +101,7 @@ else
                 for i in $saved_text
                     printf "%s\n" $i >> $BOOKMARKS_PATH
                 end
-                printf "Bookmark deleted successfully\n"
+                printf "Bookmark deleted successfully.\n"
             end
         case 4
             echo "Which?"
@@ -121,7 +123,7 @@ else
                 for i in $saved_text
                     printf "%s\n" $i >> $BOOKMARKS_PATH
                 end
-                printf "Bookmark modified successfully\n"
+                printf "Bookmark modified successfully.\n"
             end
         case 5
             break
