@@ -1,13 +1,23 @@
 #!/bin/fish
 
-set BOOKMARKS_PATH $HOME/bookmarks/list
+# create path config file
+if not [ -f $HOME/.bookmarks ]
+    touch $HOME/.bookmarks
+    echo $HOME/bookmarks > $HOME/.bookmarks
+end
+
+set P (cat $HOME/.bookmarks)
+
+set BOOKMARKS_PATH $P/list
+set BOOKMARS_DATE_PATH $P/list-date
 
 if [ -f $BOOKMARKS_PATH ]
     
 else 
     echo Your bookmarks file has been created in $BOOKMARKS_PATH
-    mkdir $HOME/bookmarks
+    mkdir $P
     touch $BOOKMARKS_PATH
+    touch $BOOKMARS_DATE_PATH
 end
 
 if count $argv > /dev/null
@@ -16,12 +26,15 @@ if count $argv > /dev/null
             case -h or --help
                 echo 
                 echo "  -h --help Help."
-                echo "  -l --list To list all the bookmarks."
+                echo "  -l --list To list all the bookmarks. Uppercase -L for times."
                 echo "  -r --recent Show the last bookmark."
                 echo "  -d --delete Delete the last bookmark."
+                echo "  -t --time Show the time of creation."
                 echo "  (no args): to enter the CLI."
                 echo "  (just text): for saving a bookmark."
                 echo
+            case -t or --time
+                sed ''$argv[2]'!d' $BOOKMARS_DATE_PATH
             case -l or --list
                 set x (string split \n (cat $BOOKMARKS_PATH))
                 echo ""
@@ -29,12 +42,20 @@ if count $argv > /dev/null
                     echo \u001b[33m$i.\u001b[0m $x[$i]
                 end
                 echo ""
+            case -L
+                set x (string split \n (cat $BOOKMARKS_PATH))
+                set d (string split \n (cat $BOOKMARS_DATE_PATH))
+                echo ""
+                for i in (seq 1 (count $x))
+                    echo \u001b[33m$i.\u001b[31m$d[$i]\u001b[0m $x[$i]
+                end
+                echo ""
             case -r or --recent
-                echo "The last bookmark is: "
                 echo (wc -l < $BOOKMARKS_PATH). (tail -1 $BOOKMARKS_PATH)
             case -d or --delete
                 if not set -q argv[2]
                     sed -i '$ d' $BOOKMARKS_PATH
+                    sed -i '$ d' $BOOKMARS_DATE_PATH
                     echo "Last bookmark deleted successfully."
                 else
                     set lines (wc -l < $BOOKMARKS_PATH)
@@ -43,12 +64,18 @@ if count $argv > /dev/null
                         echo "That bookmark doesn't exit."
                     else
                         set saved_text (string split \n (cat $BOOKMARKS_PATH))
+                        set saved_date (string split \n (cat $BOOKMARS_DATE_PATH))
                         set -e saved_text[$argv[2]]
-        
+                        set -e saved_date[$argv[2]]
                         rm $BOOKMARKS_PATH
+                        rm $BOOKMARS_DATE_PATH
                         touch $BOOKMARKS_PATH
+                        touch $BOOKMARS_DATE_PATH
                         for i in $saved_text
                             printf "%s\n" $i >> $BOOKMARKS_PATH
+                        end
+                        for i in $saved_date
+                            printf "%s\n" $i >> $BOOKMARS_DATE_PATH
                         end
                         echo "Bookmark $argv[2] deleted successfully."
                     end
@@ -59,6 +86,7 @@ if count $argv > /dev/null
     else
         set to_add $argv
         echo -e "$to_add" >> $BOOKMARKS_PATH
+        echo (date "+%d/%m/%Y %H:%M") >> $BOOKMARS_DATE_PATH
         set line (wc -l < $BOOKMARKS_PATH)
         echo "added \"$argv\" to line $line"
     end
@@ -78,6 +106,7 @@ else
         case 1
             read new
             printf "%s\n" $new >> $BOOKMARKS_PATH
+            echo (date "+%d/%m/%Y %H:%M") >> $BOOKMARS_DATE_PATH
         case 2 
             set x (string split \n (cat $BOOKMARKS_PATH))
             for i in (seq 1 (count $x))
@@ -95,11 +124,17 @@ else
             else
                 set saved_text (string split \n (cat $BOOKMARKS_PATH))
                 set -e saved_text[$which]
-
+                set saved_date (string split \n (cat $BOOKMARS_DATE_PATH))
+                set -e saved_date[$which]
                 rm $BOOKMARKS_PATH
+                rm $BOOKMARS_DATE_PATH
                 touch $BOOKMARKS_PATH
+                touch $BOOKMARS_DATE_PATH
                 for i in $saved_text
                     printf "%s\n" $i >> $BOOKMARKS_PATH
+                end
+                for i in $saved_date
+                    printf "%s\n" $i >> $BOOKMARS_DATE_PATH
                 end
                 printf "Bookmark deleted successfully.\n"
             end
