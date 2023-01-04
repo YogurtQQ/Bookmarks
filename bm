@@ -1,13 +1,13 @@
 #!/bin/fish
 
 # create path config file
-if not [ -f $HOME/.bookmarks ]
-    touch $HOME/.bookmarks
-    echo $HOME/bookmarks > $HOME/.bookmarks
+if not [ -f $HOME/.bookmarks_path ]
+    touch $HOME/.bookmarks_path
+    echo $HOME/Bookmarks > $HOME/.bookmarks_path
 end
 
 # set variable names
-set P (cat $HOME/.bookmarks)
+set P (cat $HOME/.bookmarks_path)
 
 set BOOKMARKS_PATH $P/list
 set BOOKMARS_DATE_PATH $P/list-date
@@ -120,6 +120,7 @@ if count $argv > /dev/null
                 echo "  -r --recent Show the last bookmark."
                 echo "  -d --delete Delete the last bookmark."
                 echo "  -t --time Show the time of creation."
+                echo "  -p --path Show path."
                 echo "  (no args): to enter the CLI."
                 echo "  (just text): for saving a bookmark."
                 echo
@@ -149,6 +150,8 @@ if count $argv > /dev/null
                         delete
                     end
                 end
+            case "-p" or "--path"
+                echo (cat $HOME/.bookmarks_path)
             case "-*"
                 echo "You can't add -."
         end
@@ -159,14 +162,13 @@ if count $argv > /dev/null
     end
     
 else
-    set u
     while true
 
-    echo 1. New
-    echo 2. List
-    echo 3. Delete
-    echo 4. Modify
-    echo 5. Exit to the cold pseudouniverse of freedom
+    echo 1 - New
+    echo 2 - List
+    echo 3 - Delete
+    echo 4 - Modify
+    echo "[] - Exit"
 
     read u
     switch $u
@@ -174,6 +176,7 @@ else
             set option "cli"
             add_date_and_then_display
         case 2 
+            set option "long"
             list
         case 3
             echo "Which?"
@@ -210,7 +213,9 @@ else
                 printf "Bookmark modified successfully.\n"
             end
         case 5
-            break
+            exit 0
+        case ""
+            exit 0 
         end
     end
 end
