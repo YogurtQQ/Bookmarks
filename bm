@@ -1,13 +1,25 @@
 #!/bin/fish
 
 # create path config file
-if not [ -f $HOME/.bookmarks_path ]
-    touch $HOME/.bookmarks_path
-    echo $HOME/Bookmarks > $HOME/.bookmarks_path
+if not [ -f /etc/bookmarks.conf ]
+    if not [ (id -u) -eq 0 ]
+        echo "To create the configuration, run \"sudo bm\"."
+        exit 1
+    end
+    touch /etc/bookmarks.conf
+    echo (eval echo "~$SUDO_USER")/Bookmarks | sudo tee -a /etc/bookmarks.conf > /dev/null
+    echo "Your config has been created. Run again without sudo to begin using bookmarks."
+    exit 0
 end
 
-# set variable names
-set P (cat $HOME/.bookmarks_path)
+if [ (id -u) -eq 0 ]
+    echo "Hey, why are you root? Exiting..."
+    exit 1
+end
+
+# (!) Multiple users are currently not supported. You may modify this line for
+# it. 
+set P (cat /etc/bookmarks.conf)
 
 set BOOKMARKS_PATH $P/list
 set BOOKMARS_DATE_PATH $P/list-date
@@ -121,6 +133,7 @@ if count $argv > /dev/null
                 echo "  -d --delete Delete the last bookmark."
                 echo "  -t --time Show the time of creation."
                 echo "  -p --path Show path."
+                echo "  -x --done Mark as done."
                 echo "  (no args): to enter the CLI."
                 echo "  (just text): for saving a bookmark."
                 echo
@@ -150,8 +163,11 @@ if count $argv > /dev/null
                         delete
                     end
                 end
+            case "-x" or "--done"
+                set new (sed ''$argv[2]'!d' $BOOKMARKS_PATH)
+                sed -i ''$argv[2]'s/.*/(done) '$new'/' $BOOKMARKS_PATH
             case "-p" or "--path"
-                echo (cat $HOME/.bookmarks_path)
+                echo (cat /etc/bookmarks.conf)
             case "-*"
                 echo "You can't add -."
         end
