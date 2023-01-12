@@ -1,6 +1,6 @@
 install:
-	sudo mv bm /usr/bin
-	sudo chmod +x /usr/bin/bm
+	mv bm /usr/bin
+	chmod +x /usr/bin/bm
 
 uninstall:
-	sudo rm /usr/bin/bm
+	rm /usr/bin/bm
