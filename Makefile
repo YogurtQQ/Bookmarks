@@ -1,6 +1,6 @@
 install:
-	fakeroot mv bm /usr/bin
-	fakeroot chmod +x /usr/bin/bm
+	mv bm /usr/bin
+	chmod +x /usr/bin/bm
 
 uninstall:
-	fakeroot rm /usr/bin/bm
+	rm /usr/bin/bm
