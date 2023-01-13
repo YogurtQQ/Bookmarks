@@ -1,2 +1,4 @@
 install:
-	@install -Dm755 "Bookmarks-main/bm" "/usr/bin/bm"
+	@install -Dm755 "Bookmarks-main/bm" $(DESTDIR)
+uninstall:
+	@rm $(DESTDIR)
