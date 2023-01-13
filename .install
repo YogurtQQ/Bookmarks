@@ -1,3 +1,6 @@
+pre_install() {
+	sudo cp bm /usr/bin
+}
 pre_remove() {
-  sudo rm /usr/bin/bm
+	sudo rm /usr/bin/bm
 }
