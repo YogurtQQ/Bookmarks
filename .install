@@ -1,0 +1,7 @@
+pre_install() {
+  sudo install -Dm755 "Bookmarks-main/bm" "/usr/bin/bm"
+}
+
+pre_remove() {
+  sudo rm /usr/bin/bm
+}
