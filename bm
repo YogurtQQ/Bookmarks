@@ -126,6 +126,9 @@ if count $argv > /dev/null
     if string match -q -- '-*' $argv[1]
         switch $argv[1]
             case -h or --help
+                echo
+                echo  "                       Bookmark's help                        "  
+                echo  "  _________________________________________________________   "
                 echo 
                 echo "  -h --help Help."
                 echo "  -l --list To list all the bookmarks. Uppercase -L for times."
@@ -135,8 +138,8 @@ if count $argv > /dev/null
                 echo "  -p --path Show path."
                 echo "  -x --done Mark as done."
                 echo "  -m --modify Modify a bookmark."
-                echo "  (no args): to enter the CLI."
-                echo "  (just text): for saving a bookmark."
+                echo "  just type \"bm\" with no args, to enter the CLI."
+                echo "  or type 'bm \"your content\"' for saving new content."
                 echo
             case -t or --time
                 sed ''$argv[2]'!d' $BOOKMARS_DATE_PATH
