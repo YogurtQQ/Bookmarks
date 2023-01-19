@@ -134,6 +134,7 @@ if count $argv > /dev/null
                 echo "  -t --time Show the time of creation."
                 echo "  -p --path Show path."
                 echo "  -x --done Mark as done."
+                echo "  -m --modify Modify a bookmark."
                 echo "  (no args): to enter the CLI."
                 echo "  (just text): for saving a bookmark."
                 echo
@@ -163,9 +164,33 @@ if count $argv > /dev/null
                         delete
                     end
                 end
+            case "-m" or "--modify"
+                if not set -q argv[2]
+                    echo "You have to specify the bookmark's number to change. Use --help or -h."
+                else
+                    set lines (wc -l < $BOOKMARKS_PATH)
+
+                    if [ $argv[2] -gt $lines ]
+                        echo "That bookmark doesn't exit."
+                    else
+                        set saved_text (string split \n (cat $BOOKMARKS_PATH))
+                        echo "Content changed on line $argv[2]."
+                        echo {$saved_text[$argv[2]]}
+                        sed -i ''$argv[2]'s/.*/'$argv[3..]'/' $BOOKMARKS_PATH
+                        echo "🠋"
+                        echo $argv[3..]
+                    end
+                end
             case "-x" or "--done"
-                set new (sed ''$argv[2]'!d' $BOOKMARKS_PATH)
-                sed -i ''$argv[2]'s/.*/(done) '$new'/' $BOOKMARKS_PATH
+                if not set -q argv[2]
+                
+                    set new (tail -n1 $BOOKMARKS_PATH)
+                    set ll (wc -l < $BOOKMARKS_PATH)
+                    sed -i ''$ll's/.*/(done) '$new'/' $BOOKMARKS_PATH
+                else
+                    set new (sed ''$argv[2]'!d' $BOOKMARKS_PATH)
+                    sed -i ''$argv[2]'s/.*/(done) '$new'/' $BOOKMARKS_PATH
+                end
             case "-p" or "--path"
                 echo (cat /etc/bookmarks.conf)
             case "-*"
