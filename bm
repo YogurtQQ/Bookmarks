@@ -74,13 +74,20 @@ end
 function add_date_and_then_display
     switch $option
         case "cli"
-            read new
-            echo -e "$new" >> $BOOKMARKS_PATH
+             set new_content (zenity --entry \
+            --title="New bookmark" \
+            --text="Enter content:" \
+            --entry-text "")
+
+            echo -e $new_content >> $BOOKMARKS_PATH
+            echo (date "+%d/%m/%Y %H:%M") >> $BOOKMARS_DATE_PATH
+            echo "Content added."
+            exit 0
         case "argumented"
             echo -e "$arguments" >> $BOOKMARKS_PATH
-    end
-    echo (date "+%d/%m/%Y %H:%M") >> $BOOKMARS_DATE_PATH
-    echo "added \"$arguments\" to line $(wc -l < $BOOKMARKS_PATH)"
+            echo (date "+%d/%m/%Y %H:%M") >> $BOOKMARS_DATE_PATH
+            echo "added \"$arguments\" to line $(wc -l < $BOOKMARKS_PATH)"
+        end
 end
 
 function delete
@@ -129,9 +136,10 @@ if count $argv > /dev/null
         switch $argv[1]
             case -h or --help
                 echo
-                echo  "                       Bookmark's help                        "  
-                echo  "  _________________________________________________________   "
+                echo  "                         Bookmark's help                          "  
+                echo  "  _____________________________________________________________   "
                 echo 
+                echo "  -a --add Add a new bookmark the easy way."
                 echo "  -h --help Help."
                 echo "  -l --list To list all the bookmarks. Uppercase -L for times."
                 echo "  -r --recent Show the last bookmark."
@@ -143,6 +151,21 @@ if count $argv > /dev/null
                 echo "  just type \"bm\" with no args, to enter the CLI."
                 echo "  or type 'bm \"your content\"' for saving new content."
                 echo
+            case -a or --add
+                 set new_content (zenity --entry \
+                --title="New bookmark" \
+                --text="Enter content:" \
+                --entry-text "")
+
+                if [ $status = 1 ]
+                    echo "You canceled. Exiting."
+                    exit 1
+                end
+                
+                echo -e $new_content >> $BOOKMARKS_PATH
+                echo (date "+%d/%m/%Y %H:%M") >> $BOOKMARS_DATE_PATH
+                echo "Content added."
+                exit 0
             case -t or --time
                 sed ''$argv[2]'!d' $BOOKMARS_DATE_PATH
             case -l or --list
@@ -244,9 +267,14 @@ else
             set option "long"
             list
         case 3
-            echo "Which?"
+            echo "Which one do you want to delete? (Careful)"
             read which
 
+            if [ $which = "" ]
+                echo "No number was read. Exiting."
+                exit 1
+            end
+            
             set lines (wc -l < $BOOKMARKS_PATH)
 
             if [ $which -gt $lines ]
@@ -256,9 +284,14 @@ else
                 delete
             end
         case 4
-            echo "Which?"
+            echo "Which one do you want to modify? (Careful)"
             read which
 
+            if [ $which = "" ]
+                echo "No number was read. Exiting."
+                exit 1
+            end
+            
             set lines (wc -l < $BOOKMARKS_PATH)
 
             if [ $which -gt $lines ]
