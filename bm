@@ -1,13 +1,15 @@
 #!/bin/fish
 
+set BOOKMARKS_PATHS_PATH "/etc/bookmarks.conf"
+
 # create path config file
-if not [ -f /etc/bookmarks.conf ]
+if not [ -f $BOOKMARKS_PATHS_PATH ]
     if not [ (id -u) -eq 0 ]
         echo "To create the configuration, run \"sudo bm\"."
         exit 1
     end
-    touch /etc/bookmarks.conf
-    echo (eval echo "~$SUDO_USER")/Bookmarks | sudo tee -a /etc/bookmarks.conf > /dev/null
+    touch $BOOKMARKS_PATHS_PATH
+    echo (eval echo "~$SUDO_USER")/Bookmarks | sudo tee -a $BOOKMARKS_PATHS_PATH > /dev/null
     echo "Your config has been created. Run again without sudo to begin using bookmarks."
     exit 0
 end
@@ -19,7 +21,7 @@ end
 
 # (!) Multiple users are currently not supported. You may modify this line for
 # it. 
-set P (cat /etc/bookmarks.conf)
+set P (cat $BOOKMARKS_PATHS_PATH)
 
 set BOOKMARKS_PATH $P/list
 set BOOKMARS_DATE_PATH $P/list-date
@@ -112,11 +114,11 @@ function list
     switch $option
         case "short"
             for i in (seq 1 (count $x))
-                echo \u001b[33m$i.\u001b[0m $x[$i]
+                echo "  "\u001b[33m$i.\u001b[0m $x[$i]
             end
         case "long"
         for i in (seq 1 (count $x))
-            echo \u001b[33m$i.\u001b[31m$d[$i]\u001b[0m $x[$i]
+            echo "  "\u001b[33m$i.\u001b[31m$d[$i]\u001b[0m $x[$i]
         end
     end
     echo ""
@@ -170,6 +172,25 @@ if count $argv > /dev/null
             case "-m" or "--modify"
                 if not set -q argv[2]
                     echo "You have to specify the bookmark's number to change. Use --help or -h."
+                    exit 1
+                end
+                if not set -q argv[3]
+                    set lines (wc -l < $BOOKMARKS_PATH)
+
+                    if [ $argv[2] -gt $lines ]
+                        echo "That bookmark doesn't exit."
+                    else
+                        set saved_text (string split \n (cat $BOOKMARKS_PATH))
+                         set modify (zenity --entry \
+                        --title="Editing bookmark" \
+                        --text="Enter new content:" \
+                        --entry-text "$saved_text[$argv[2]]")
+                        echo "Content changed on line $argv[2]."
+                        echo {$saved_text[$argv[2]]}
+                        sed -i ''$argv[2]'s/.*/'$modify'/' $BOOKMARKS_PATH
+                        echo "🠋"
+                        echo $modify
+                    end
                 else
                     set lines (wc -l < $BOOKMARKS_PATH)
 
