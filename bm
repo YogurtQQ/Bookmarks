@@ -1,5 +1,8 @@
 #!/bin/fish
 
+# Bookmarks, version 0.3
+# by dark7void
+
 set BOOKMARKS_PATHS_PATH "/etc/bookmarks.conf"
 
 # create path config file
