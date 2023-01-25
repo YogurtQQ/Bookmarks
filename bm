@@ -1,6 +1,6 @@
 #!/bin/fish
 
-# Bookmarks, version 0.3
+# Bookmarks, version 0.4
 # by dark7void
 
 set BOOKMARKS_PATHS_PATH "/etc/bookmarks.conf"
@@ -12,7 +12,7 @@ if not [ -f $BOOKMARKS_PATHS_PATH ]
         exit 1
     end
     touch $BOOKMARKS_PATHS_PATH
-    echo (eval echo "~$SUDO_USER")/Bookmarks | sudo tee -a $BOOKMARKS_PATHS_PATH > /dev/null
+    echo (eval echo "~$SUDO_USER")/bookmarks | sudo tee -a $BOOKMARKS_PATHS_PATH > /dev/null
     echo "Your config has been created. Run again without sudo to begin using bookmarks."
     exit 0
 end
@@ -24,7 +24,7 @@ end
 
 # (!) Multiple users are currently not supported. You may modify this line for
 # it. 
-set P (cat $BOOKMARKS_PATHS_PATH)
+set P (grep -oP '(?<=bookmarks=)[^\s]+' $BOOKMARKS_PATHS_PATH)
 
 set BOOKMARKS_PATH $P/list
 set BOOKMARS_DATE_PATH $P/list-date
