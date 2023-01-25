@@ -5,6 +5,9 @@
 
 set BOOKMARKS_PATHS_PATH "/etc/bookmarks.conf"
 
+# you may modify this, if you want to have multiple bookmarks. For example, copy the binary, and use it for another bookmarking
+set NAME "bookmarks"
+
 # create path config file
 if not [ -f $BOOKMARKS_PATHS_PATH ]
     if not [ (id -u) -eq 0 ]
@@ -12,7 +15,7 @@ if not [ -f $BOOKMARKS_PATHS_PATH ]
         exit 1
     end
     touch $BOOKMARKS_PATHS_PATH
-    echo (eval echo "~$SUDO_USER")/bookmarks | sudo tee -a $BOOKMARKS_PATHS_PATH > /dev/null
+    echo "$NAME="(eval echo "~$SUDO_USER")/bookmarks | sudo tee -a $BOOKMARKS_PATHS_PATH > /dev/null
     echo "Your config has been created. Run again without sudo to begin using bookmarks."
     exit 0
 end
@@ -22,9 +25,8 @@ if [ (id -u) -eq 0 ]
     exit 1
 end
 
-# (!) Multiple users are currently not supported. You may modify this line for
-# it. 
-set P (grep -oP '(?<=bookmarks=)[^\s]+' $BOOKMARKS_PATHS_PATH)
+# (!) Multiple users are currently not supported. You may modify this line for it
+set P (grep -oP '(?<=$NAME=)[^\s]+' $BOOKMARKS_PATHS_PATH)
 
 set BOOKMARKS_PATH $P/list
 set BOOKMARS_DATE_PATH $P/list-date
