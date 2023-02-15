@@ -10,7 +10,7 @@
 ```
 # paste this in your terminal
 cd /tmp
-git clone https://github.com/dark7void/Bookmarks.git
+git clone https://github.com/treel0ver/Bookmarks.git
 if [ $? -eq 0 ]; then
   sudo cp Bookmarks/bm /usr/bin
   sudo chmod +x /usr/bin/bm
@@ -21,7 +21,7 @@ fi
 ```
 # paste this in your terminal
 cd /tmp
-git clone https://github.com/dark7void/Bookmarks.git
+git clone https://github.com/treel0ver/Bookmarks.git
 if [ $status -eq 0 ]
   sudo cp Bookmarks/bm /usr/bin
   sudo chmod +x /usr/bin/bm
